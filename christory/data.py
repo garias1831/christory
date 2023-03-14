@@ -1,4 +1,14 @@
 import numpy as np
+import pandas as pd
+
+#TODO -- maybe move this into  data folder, idk, maybe read some code to get some best practice typa thing
+#This file name could also be more descriptive, data is too generic
+
+#General information about this unique save   
+class Game:
+    turn_no = 0
+    civs = [] #TODO -- maybe make me a np array (cuz we love that)
+    game_map = pd.DataFrame()
 
 class Unit: 
     def __init__(self, _location, _master, _type, _attack,
@@ -33,22 +43,19 @@ class Civ:
 #TODO -- honestly thnking about deleting this class
 #TODO -- and just delegating everything to an excel spreadsheet w/ pandas (would double as 'map')
 class Province:
-    def __init__(self, _pid, _controller, _terrain, _econ, _manpower):
+    def __init__(self, _id, _controller, _terrain, _econ, _manpower):
         #Unique province id
-        self.pid = _pid
+        self.id = _id
         #Who owns this province
         self.controller = _controller
         self.terrain = _terrain
         self.econ = _econ
         self.manpower = _manpower
         self.city = None
-        
-class Game:
-    civs = np.array()
-    turn_no = 0
 
+
+#TODO -- this class may be redundant
 class City:
     def __init__(self, _controller, _name):
         self.controller = _controller
         self.name = __name__
-
