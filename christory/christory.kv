@@ -16,6 +16,7 @@ ScreenManager:
         Button:
             text: 'New Game'
             size_hint: 1, 0.2
+            on_press: root.get_base_map()
             on_release: app.root.current = 'MainGame'
         Button:
             text: 'Load Game'
@@ -24,6 +25,7 @@ ScreenManager:
 
 <MainGameScreen>
     name: 'MainGame'
+    on_pre_enter: game_map.add_provinces()
     BoxLayout:
         orientation: 'vertical'
         StackLayout:
@@ -32,6 +34,7 @@ ScreenManager:
             Button:
                 text: 'Next Turn'
                 size_hint: 0.3, 1
+
             Button:
                 text: 'Save Game'
                 size_hint: 0.1, 1
@@ -39,14 +42,16 @@ ScreenManager:
                 text: 'Exit'
                 size_hint: 0.1, 1
                 on_release: app.root.current = 'Title'
-        StackLayout:
-            Button:
-                size_hint: 0.07, 0.1
-                orientation: 'rl-tb'
-                text:'plac'
-            Button:
-                size_hint: 0.07, 0.1
-                text:'sf'
+        GameMap:
+            #This id will be used to get a direct reference to this GameMap. 
+            id: game_map
+            orientation: 'lr-tb'
+            #Button:
+             #   size_hint: 0.07, 0.1
+              #  text:'plac'
+            #Button:
+             #   size_hint: 0.07, 0.1
+              #  text:'sf'
         
         #Label:
          #   text: 'I am a map placeholder'

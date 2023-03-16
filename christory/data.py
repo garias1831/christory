@@ -5,10 +5,7 @@ import pandas as pd
 #This file name could also be more descriptive, data is too generic
 
 #General information about this unique save   
-class Game:
-    turn_no = 0
-    civs = [] #TODO -- maybe make me a np array (cuz we love that)
-    game_map = pd.DataFrame()
+
 
 class Unit: 
     def __init__(self, _location, _master, _type, _attack,
@@ -58,4 +55,20 @@ class Province:
 class City:
     def __init__(self, _controller, _name):
         self.controller = _controller
-        self.name = __name__
+        self.name = _name
+
+class Game:
+    '''Global class containing general information about the game's unique save. 
+    
+    Attributes
+    ----------
+    turn_no : int
+        How many turns the current game has progressed
+    civs: list<Civ>
+        All of the civillizations currently in play
+    game_map: pd.DataFrame()
+        Dataframe showing the current state of the game board'''
+    
+    turn_no = 0
+    civs = [] #TODO -- maybe make me a np array (cuz we love that)
+    game_map = pd.DataFrame()
