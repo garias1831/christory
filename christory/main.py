@@ -51,22 +51,38 @@ class GameMap(StackLayout):
         '''Adds ProvinceGraphic widgets to the GameMap based on the number of entries in the game_map dataframe.'''
         province_total = len(Game.game_map.index)
         for i in range(province_total):
-            self.config_province()
+            #Grabbing the respective values from the map-base excel sheet. 
+            civ = Game.game_map.iloc[i]['controller']
+            terrain = Game.game_map.iloc[i]['terrain']
+            self.config_province(civ, terrain)
     
-    def config_province(self): 
+    def config_province(self, controller, terrain): 
         '''Instantiates ProvinceGraphic objects. Sets their color based on terrain and the controlling civ.'''
         #TODO -- make it so that province color changes on the controlling civ (will be useful 4 later fo sho)
 
         #The size of these widgets are important. Here, were optimizing the game to be a 200 province affair (10 high x 20 wide)
-        province = ProvinceGraphic(_size_hint=(0.05, 0.1)) #FIXME -- this violates DI, idk how okay it is though ykyk?
-        province.draw_province_rect()
+        #province = ProvinceGraphic(_size_hint=(0.05, 0.1)) #FIXME -- this violates DI, idk how okay it is though ykyk?
+        province = ProvinceGraphic(_size_hint=(0.025, 0.05)) #FIXME -- this violates DI, idk how okay it is though ykyk?
+        color = province.get_province_color(controller, terrain)
+        province.draw_province_rect(color)
         province.bind(pos=province.update_rect, size=province.update_rect)
 
         self.add_widget(province)
 
        
 class ProvinceGraphic(Widget):
-    '''Visual representaion of an individual province.'''
+    '''Visual representaion of an individual province.
+
+    Methods
+    -------
+    draw_province_rect(color)
+        "Colors" the province by drawing a rectangle that is the same size as the widget.
+    get_province_color(controller, terrain)
+        Returns an RGB color depending on the terrain and controlling civ.
+    update_rect(instance, value)
+        Method to ensure that the drawn rectangle reacts to changes in size and position.
+    '''
+
     def __init__(self, _size_hint, **kwargs):
         '''Instansiates the ProvinceGraphic class and the Widget superclass. 
         
@@ -80,13 +96,48 @@ class ProvinceGraphic(Widget):
         super().__init__(**kwargs)
         self.size_hint = _size_hint
 
-    def draw_province_rect(self):
-        '''"Colors" the province by drawing a rectangle that is the same size as the widget.'''
+    def draw_province_rect(self, color):
+        '''"Colors" the province by drawing a rectangle that is the same size as the widget.
+        Parameters
+        ----------
+        color: tuple<float>
+            Tuple representing an RGB color code.
+        '''
 
+        r, g, b = color
         with self.canvas:
-            Color(.119, .221, .119)
+            Color(r, g, b)
             self.rect = Rectangle(pos=self.pos, size=self.size)
-    
+
+    def get_province_color(self, controller, terrain): #TODO -- work in the controller aspect of the color shift
+        '''Returns an RGB color depending on the terrain and controlling civ.
+            
+        Parameters
+        ----------
+        controller: str
+            Three-letter string identifier for the civ controlling the province.
+        terrain: str
+            The terrain of the province being drawn.
+
+        Returns
+        ---------
+        tuple<float>
+            Tuple representing an RGB color code.
+        '''
+
+        if terrain == 'ocean':
+            return (69/255, 204/255, 195/255) #TODO -- this color is kinda bright and annoying, but i'll see how i feel abt it
+        elif terrain == 'desert':
+            return (227/255, 167/255, 36/255)
+        elif terrain == 'grassland':
+            return (20/255, 201/255, 56/255)
+        elif terrain == 'forest':
+            return (73/255, 166/255, 63/255)
+        elif terrain == 'hills':
+            return (30/255, 109/255, 32/255)
+        elif terrain == 'mountain':
+            return (98/255, 99/255, 97/255)
+
     def update_rect(self, instance, value):
         '''Method to ensure that the drawn rectangle reacts to changes in size and position. Code stolen from https://kivy.org/doc/stable/guide/widgets.html#adding-widget-background
         
