@@ -6,6 +6,7 @@ from kivy.graphics import Color, Rectangle, Line
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.uix.stacklayout import StackLayout
 from kivy.uix.widget import Widget
+from kivy.core.window import Window
 import numpy as np
 import pandas as pd
 
@@ -29,7 +30,6 @@ class TitleScreen(Screen):
         path = r'E:\code\python\kivy\christory\data\map-base.xlsx' #TODO -- make this path more dynamic, 
         df = pd.read_excel(path)
         Game.game_map = df.copy() 
-
 
 
 class MainGameScreen(Screen):
@@ -126,17 +126,17 @@ class ProvinceGraphic(Widget):
         '''
 
         if terrain == 'ocean':
-            return (69/255, 204/255, 195/255) #TODO -- this color is kinda bright and annoying, but i'll see how i feel abt it
+            return (58/255, 179/255, 218/255) #TODO -- this color is kinda bright and annoying, but i'll see how i feel abt it
         elif terrain == 'desert':
             return (227/255, 167/255, 36/255)
-        elif terrain == 'grassland':
-            return (20/255, 201/255, 56/255)
+        elif terrain == 'grasslands':
+            return (128/255, 199/255, 31/255)
         elif terrain == 'forest':
-            return (73/255, 166/255, 63/255)
+            return (103/255, 117/255, 53/255)
         elif terrain == 'hills':
-            return (30/255, 109/255, 32/255)
-        elif terrain == 'mountain':
-            return (98/255, 99/255, 97/255)
+            return (62/255, 92/255, 32/255)
+        elif terrain == 'mountains':
+            return (156/255, 157/255, 151/255)
 
     def update_rect(self, instance, value):
         '''Method to ensure that the drawn rectangle reacts to changes in size and position. Code stolen from https://kivy.org/doc/stable/guide/widgets.html#adding-widget-background
@@ -155,4 +155,5 @@ class ProvinceGraphic(Widget):
 
 
 if __name__ == '__main__':
+    #Window.fullscreen = 'auto' #FIXME -- makes the window fullscreen , but can't windows button out of it. Add a button in .kv to kill the application / exit
     ChristoryApp().run()

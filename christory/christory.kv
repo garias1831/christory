@@ -30,10 +30,10 @@ ScreenManager:
         orientation: 'vertical'
         StackLayout:
             orientation: 'rl-tb'
-            size_hint: 1, 0.1 #This might not work as intended, so ill have to troubleshoot later
+            size_hint: 1, 0.075 #This might not work as intended, so ill have to troubleshoot later
             canvas.before:
-                Color:
-                    rgba: (69/255, 204/255, 195/255, 1) # I'm actually a monkey, SET IT LIKE THIS FROM NOW ON (r/255. g/255 etc) bc thats how it works
+                Color: #TODO -- color is better, but still ifft tbt it
+                    rgba: (61/255, 89/255, 102/255, 1) # I'm actually a monkey, SET IT LIKE THIS FROM NOW ON (r/255. g/255 etc) bc thats how it works
                 Rectangle:
                     pos: self.pos
                     size: self.size
