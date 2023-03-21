@@ -2,6 +2,7 @@
 
 from data import Game
 import pandas as pd
+import numpy as np
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -27,3 +28,19 @@ def test_add_provinces():
             terrrain = Game.game_map.iloc[i]['terrain']
             LOGGER.warning(f'Controller:{controller}; Terrain:{terrrain}')
             #self.config_province()
+
+
+
+
+def test_generate_spawn_position():
+        while True:
+            civ_total = 4
+            spawns = np.sort(np.random.randint(0, 800, size=civ_total))
+            unique_spawns = np.sort(np.array(np.array(list(set(spawns)))))
+
+            LOGGER.warning(spawns)
+            LOGGER.error(f'Filtered spawn list:{unique_spawns}')
+            
+            if np.array_equal(spawns, unique_spawns):
+                break
+            

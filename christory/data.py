@@ -64,11 +64,12 @@ class Game:
     ----------
     turn_no : int
         How many turns the current game has progressed
-    civs: list<Civ>
-        All of the civillizations currently in play
+    civs: pd.DataFrame
+       Dataframe of civs in play. Dataframe contains total manpower, econ, tech, and wars
     game_map: pd.DataFrame()
         Dataframe showing the current state of the game board'''
     
     turn_no = 0
-    civs = [] #TODO -- maybe make me a np array (cuz we love that)
+    #civs = [] #TODO -- maybe make me a np array (cuz we love that)
     game_map = pd.DataFrame()
+    civs = pd.DataFrame()

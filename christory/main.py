@@ -24,12 +24,16 @@ class TitleScreen(Screen):
         Gets the base map and stores it as a dataframe.
     '''
 
-    def get_base_map(self):
-        '''Gets the base map and stores it as a dataframe. Called when user presses the 'New Game' button on the UI.'''
+    def get_base_data(self):
+        '''Gets the base map and civ sheets and stores them as dataframes. Called when user presses the 'New Game' button on the UI.'''
 
-        path = r'E:\code\python\kivy\christory\data\map-base.xlsx' #TODO -- make this path more dynamic, 
-        df = pd.read_excel(path)
-        Game.game_map = df.copy() 
+        path = r'E:\code\python\kivy\christory\data\map-base.xlsx' #TODO -- make this path more dynamic, so other people can use it
+        map_df = pd.read_excel(path)
+        Game.game_map = map_df.copy() #idk if copy is neccesary but like sure
+
+        path = r'E:\code\python\kivy\christory\data\civs-base.xlsx'
+        civs_df = pd.read_excel(path)
+        Game.civs = civs_df.copy() 
 
 
 class MainGameScreen(Screen):
@@ -47,8 +51,11 @@ class GameMap(StackLayout):
         Instantiates ProvinceGraphic objects. Sets their color based on terrain and the controlling civ.
     '''
     
+    #TODO use self.children to access the individual provinces
+
+
     def add_provinces(self):
-        '''Adds ProvinceGraphic widgets to the GameMap based on the number of entries in the game_map dataframe.'''
+        '''Adds ProvinceGraphic widgets to the GameMap based on the number of entries in the game_map dataframe. Called by entering the MainGameScreen.'''
         province_total = len(Game.game_map.index)
         for i in range(province_total):
             #Grabbing the respective values from the map-base excel sheet. 
@@ -60,7 +67,7 @@ class GameMap(StackLayout):
         '''Instantiates ProvinceGraphic objects. Sets their color based on terrain and the controlling civ.'''
         #TODO -- make it so that province color changes on the controlling civ (will be useful 4 later fo sho)
 
-        #The size of these widgets are important. Here, were optimizing the game to be a 200 province affair (10 high x 20 wide)
+        #The size of these widgets are important. Here, were optimizing the game to be a 800 province affair (20 high x 40 wide)
         #province = ProvinceGraphic(_size_hint=(0.05, 0.1)) #FIXME -- this violates DI, idk how okay it is though ykyk?
         province = ProvinceGraphic(_size_hint=(0.025, 0.05)) #FIXME -- this violates DI, idk how okay it is though ykyk?
         color = province.get_province_color(controller, terrain)
