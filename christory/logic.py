@@ -21,12 +21,13 @@ class CivInitializer:
         -------
         spawns: list<int>
             list of civ starting locations'''
-        
         df = Game.game_map
         land = df[df['terrain'] != 'ocean']
         id_list =  land['id'].tolist()
         #Generating 4 civs
-        spawns = r.sample(id_list, 4) 
+        #this input is a placeholder. TODO!!! Add slider or smthn that can do this 
+        civ_total = input("how many civs")
+        spawns = r.sample(id_list, civ_total) 
 
         return spawns
 
