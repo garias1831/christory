@@ -2,6 +2,7 @@
 
 from data import Game
 import pandas as pd
+import random as r
 import numpy as np
 import logging
 
@@ -30,9 +31,30 @@ def test_add_provinces():
             #self.config_province()
 
 
+#Test for generate_spawn_potision method
+def test_gsp():
+    #setup data
+    path = r'E:\code\python\kivy\christory\data\map-base.xlsx'
+    df = pd.read_excel(path)
+
+    land = df[df['terrain'] != 'ocean']
+    LOGGER.warning(land)
+
+    id_list =  land['id'].tolist()
+    LOGGER.warning(f'List of ids: {[id_list]}')
+
+    spawns = r.sample(id_list, 4)
+    LOGGER.critical(f'Sample spawn: {spawns}')
 
 
+
+
+
+
+'''
 def test_generate_spawn_position():
+        
+        
         while True:
             civ_total = 4
             spawns = np.sort(np.random.randint(0, 800, size=civ_total))
@@ -43,4 +65,5 @@ def test_generate_spawn_position():
             
             if np.array_equal(spawns, unique_spawns):
                 break
+        '''
             

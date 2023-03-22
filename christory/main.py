@@ -1,4 +1,5 @@
 from data import Game
+from logic import CivInitializer, TurnHandler
 from kivy.app import App
 from kivy.uix.button import Button
 from kivy.properties import ObjectProperty
@@ -59,22 +60,31 @@ class GameMap(StackLayout):
         province_total = len(Game.game_map.index)
         for i in range(province_total):
             #Grabbing the respective values from the map-base excel sheet. 
-            civ = Game.game_map.iloc[i]['controller']
+            civ = Game.game_map.iloc[i]['controller'] #FIXME -- can probably rmove
             terrain = Game.game_map.iloc[i]['terrain']
             self.config_province(civ, terrain)
+        self.add_civs()
     
     def config_province(self, controller, terrain): 
         '''Instantiates ProvinceGraphic objects. Sets their color based on terrain and the controlling civ.'''
         #TODO -- make it so that province color changes on the controlling civ (will be useful 4 later fo sho)
 
         #The size of these widgets are important. Here, were optimizing the game to be a 800 province affair (20 high x 40 wide)
-        #province = ProvinceGraphic(_size_hint=(0.05, 0.1)) #FIXME -- this violates DI, idk how okay it is though ykyk?
         province = ProvinceGraphic(_size_hint=(0.025, 0.05)) #FIXME -- this violates DI, idk how okay it is though ykyk?
         color = province.get_province_color(controller, terrain)
         province.draw_province_rect(color)
         province.bind(pos=province.update_rect, size=province.update_rect)
 
         self.add_widget(province)
+    
+    def add_civs(self):
+        spawns = CivInitializer().generate_spawn_position()
+        
+        #TODO -- work in a system to select each civ, proabbly using .loc or .iloc; then  pass into set_civ_color
+        for i in spawns:
+            #The province's index and ids are equivalent
+            province = self.children[i]
+            province.get_civ_color() #https://towardsdatascience.com/dealing-with-list-values-in-pandas-dataframes-a177e534f173 will be useful 
 
        
 class ProvinceGraphic(Widget):
@@ -116,7 +126,10 @@ class ProvinceGraphic(Widget):
             Color(r, g, b)
             self.rect = Rectangle(pos=self.pos, size=self.size)
 
-    def get_province_color(self, controller, terrain): #TODO -- work in the controller aspect of the color shift
+    def get_civ_color(self, controller): #TODO -- probably want province param for modifying province; also change name to set_civ color maybe?
+        pass #TODO -- develop logic, change province color based on
+
+    def get_province_color(self, controller, terrain): #TODO -- make me a get terrain color
         '''Returns an RGB color depending on the terrain and controlling civ.
             
         Parameters
