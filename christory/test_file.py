@@ -38,7 +38,7 @@ def test_gsp():
     df = pd.read_excel(path)
 
     land = df[df['terrain'] != 'ocean']
-    LOGGER.warning(land)
+    LOGGER.warning(land.to_string())
 
     id_list =  land['id'].tolist()
     LOGGER.warning(f'List of ids: {[id_list]}')
