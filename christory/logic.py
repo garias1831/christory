@@ -4,9 +4,15 @@ import numpy as np
 import random as r
 
 class TurnHandler:
-    pass
+    def on_next_turn(self):
+      chance = r.uniform(0, 1)
+    def roll_colonization(self):
+      df = Game.game_map
+      claimable_land = df[df['controller'] == 'UNC']
+
 class Akhil_Generator_Map:
     def Map_Generator_v2(length, How_Many_Rows):
+        #NOTE: To add/ Chance terrain simply text me and ill add / subtract lickity split
         Terrain = []
 #Lets me do a spinner and not have to rewrite it everytime (:
         def Do_Le_Randoms(Chance_of_Grass, Chance_of_Forest, Chance_of_Water):
@@ -62,7 +68,7 @@ class Akhil_Generator_Map:
                     HowManyRowsCompleted += 1
                     Ignore += 1
         return Terrain
-
+   
 class CivInitializer:
     '''Utility class for initializing individual civ locations. and other things. (l8er?)
     Methods
