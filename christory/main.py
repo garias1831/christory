@@ -39,6 +39,9 @@ class TitleScreen(Screen):
 
 class MainGameScreen(Screen):
     '''Represents the window where the game will actually be played.'''
+    
+    def on_next_turn(self):
+        TurnHandler().on_next_turn()
 
 
 class GameMap(StackLayout):
@@ -48,6 +51,8 @@ class GameMap(StackLayout):
     -------
     add_provinces()
         Adds ProvinceGraphic widgets to the GameMap based on the number of entries in the game_map dataframe.
+    add civs()
+        Colors in existing provinces to represent randomized civ spawns.
     config_province()
         Instantiates ProvinceGraphic objects. Sets their color based on terrain and the controlling civ.
     '''
@@ -55,43 +60,41 @@ class GameMap(StackLayout):
     #TODO use self.children to access the individual provinces
 
 
-    def add_provinces(self):
+    def add_provinces(self): #TODO -- it probably makes sense to do a setup typa method just to be a little more clear (if complex)... just a method w calls to add province and add civ
         '''Adds ProvinceGraphic widgets to the GameMap based on the number of entries in the game_map dataframe. Called by entering the MainGameScreen.'''
         province_total = len(Game.game_map.index)
         for i in range(province_total):
             #Grabbing the respective values from the map-base excel sheet. 
-            civ = Game.game_map.iloc[i]['controller'] #FIXME -- can probably rmove
             terrain = Game.game_map.iloc[i]['terrain']
-            self.config_province(civ, terrain, i) #TODO - remove unused params 
+            self.config_province(terrain) #TODO - remove unused params 
         #self.children.sort(key=lambda x: x.id, reverse=True) #maybe sorting this works? but not really?
         self.add_civs()
     
-    def config_province(self, controller, terrain, pos): 
+    def config_province(self, terrain): 
         '''Instantiates ProvinceGraphic objects. Sets their color based on terrain and the controlling civ.'''
         #TODO -- make it so that province color changes on the controlling civ (will be useful 4 later fo sho)
 
         #The size of these widgets are important. Here, were optimizing the game to be a 800 province affair (20 high x 40 wide)
-        province = ProvinceGraphic(_size_hint=(0.025, 0.05), _id=pos) #FIXME -- this violates DI, idk how okay it is though ykyk?
-        color = province.get_province_color(controller, terrain)
+        province = ProvinceGraphic(_size_hint=(0.025, 0.05)) #FIXME -- this violates DI, idk how okay it is though ykyk?
+        color = province.get_terrain_color(terrain)
         province.draw_province_rect(color)
         province.bind(pos=province.update_rect, size=province.update_rect)
 
         self.add_widget(province)
     
-    def add_civs(self): #FIXME -- the color adding works well, but for some reason the spawns are not precise, as in some of the civs jsut spawn in oceans and like that.. so idk
+    def add_civs(self):
+        '''Colors in existing provinces to represent randomized civ spawns.''' 
         spawns = CivInitializer().generate_spawn_position()
-        print(spawns)
-        #TODO -- work in a system to select each civ, proabbly using .loc or .iloc; then  pass into set_civ_color
         for i, spawn in enumerate(spawns):
             civ = Game.civs.iloc[i]['civ']
-            #The province's position and ids are equivalent
-            province = self.children[spawn]
-            province.set_civ_color(civ, spawn)
-            
-            #province.bind(pos=province.update_rect, size=province.update_rect)
-
-      
-
+            #Widgets in self.children are stored front-to-back even though we insert them back-to-front.
+            #See this: https://github.com/kivy/kivy/issues/2895
+            children = self.children[:]
+            children.reverse()
+            #The province's id and index in the list are equal
+            province = children[spawn]
+            province.set_civ_color(civ)
+        
        
 class ProvinceGraphic(Widget):
     '''Visual representaion of an individual province.
@@ -100,13 +103,15 @@ class ProvinceGraphic(Widget):
     -------
     draw_province_rect(color)
         "Colors" the province by drawing a rectangle that is the same size as the widget.
-    get_province_color(controller, terrain)
+    set_civ_color(civ) 
+        Sets the province's color based on the controlling civ.
+    get_terrain_color(controller, terrain)
         Returns an RGB color depending on the terrain and controlling civ.
     update_rect(instance, value)
         Method to ensure that the drawn rectangle reacts to changes in size and position.
     '''
 
-    def __init__(self, _size_hint, _id, **kwargs):
+    def __init__(self, _size_hint, **kwargs):
         '''Instansiates the ProvinceGraphic class and the Widget superclass. 
         
         Parameters
@@ -118,7 +123,7 @@ class ProvinceGraphic(Widget):
         #Calling super() to make sure the base Widget's canvas is defined. Removing this line results in an AttributeError.
         super().__init__(**kwargs)
         self.size_hint = _size_hint
-        self.id = _id
+
     def draw_province_rect(self, color):
         '''"Colors" the province by drawing a rectangle that is the same size as the widget.
         Parameters
@@ -133,21 +138,25 @@ class ProvinceGraphic(Widget):
             Color(r, g, b)
             self.rect = Rectangle(pos=self.pos, size=self.size)
 
-    def set_civ_color(self, civ, id): #TODO -- probably want province param for modifying province; also change name to set_civ color maybe?
+    def set_civ_color(self, civ): #TODO -- probably want province param for modifying province; also change name to set_civ color maybe?
+        '''Sets the province's color based on the controlling civ.
+        Parameters
+        ----------
+        civ: str
+            Three-letter string identifier for the civ controlling the province. 
+        '''
+
         df = Game.civs
-        color = df.loc[df['civ'] == civ]['color'].apply(eval).to_list()[0] #Thank you https://towardsdatascience.com/dealing-with-list-values-in-pandas-dataframes-a177e534f173
+        #Thank you https://towardsdatascience.com/dealing-with-list-values-in-pandas-dataframes-a177e534f173
+        color = df.loc[df['civ'] == civ]['color'].apply(eval).to_list()[0] 
         color = list(map(eval, color))
-        
         self.draw_province_rect(color)
 
-        
-    def get_province_color(self, controller, terrain): #TODO -- make me a get terrain color
-        '''Returns an RGB color depending on the terrain and controlling civ.
+    def get_terrain_color(self, terrain): #FIXME -- controller isn't needed here, can probably remove
+        '''Returns an RGB color depending on the province terrain.
             
         Parameters
         ----------
-        controller: str
-            Three-letter string identifier for the civ controlling the province.
         terrain: str
             The terrain of the province being drawn.
 

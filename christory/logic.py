@@ -4,8 +4,12 @@ import numpy as np
 import random as r
 
 class TurnHandler:
-    pass
+    def on_next_turn(self):
+        chance = r.uniform(0, 1)
 
+    def roll_colonization(self):
+        df = Game.game_map
+        claimable_land = df[df['controller'] == 'UNC']
 
 class CivInitializer:
     '''Utility class for initializing individual civ locations. and other things. (l8er?)
