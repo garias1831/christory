@@ -11,6 +11,7 @@ class TurnHandler:
       claimable_land = df[df['controller'] == 'UNC']
 
 class Akhil_Generator_Map:
+    @staticmethod
     def Map_Generator_v2(length, How_Many_Rows):
         #NOTE: To add/ Chance terrain simply text me and ill add / subtract lickity split
         Terrain = []
