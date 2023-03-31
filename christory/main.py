@@ -56,9 +56,6 @@ class GameMap(StackLayout):
     config_province()
         Instantiates ProvinceGraphic objects. Sets their color based on terrain and the controlling civ.
     '''
-    
-    #TODO use self.children to access the individual provinces
-
 
     def add_provinces(self): #TODO -- it probably makes sense to do a setup typa method just to be a little more clear (if complex)... just a method w calls to add province and add civ
         '''Adds ProvinceGraphic widgets to the GameMap based on the number of entries in the game_map dataframe. Called by entering the MainGameScreen.'''

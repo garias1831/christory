@@ -47,6 +47,15 @@ def test_gsp():
     LOGGER.critical(f'Sample spawn: {spawns}')
 
 
+def test_roll_colonization():
+    pass
+
+
+def test_find_adjacent_ids():
+    id_map = np.arange(800)
+    x = np.split(id_map, 20)
+    #These loops
+    LOGGER.warning(type(x))
 
 
 
