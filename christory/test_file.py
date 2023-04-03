@@ -2,6 +2,7 @@
 
 from data import Game
 import pandas as pd
+import pytest
 import random as r
 import numpy as np
 import logging
@@ -51,11 +52,42 @@ def test_roll_colonization():
     pass
 
 
-def test_find_adjacent_ids():
-    id_map = np.arange(800)
-    x = np.split(id_map, 20)
-    #These loops
-    LOGGER.warning(type(x))
+@pytest.mark.parametrize('target_id', [(50), (79), (39)])
+def test_find_adjacent_ids(target_id):
+    ids = range(800)
+    step = 40
+    target = target_id
+
+    id_map = [ids[x:x+step] for x in range(0, 800, step)]
+
+    for i, row in enumerate(id_map):
+         if target in row:
+              rownum = i
+    LOGGER.warning(rownum)
+    adjacent_rows = id_map[rownum-1:rownum+2] #FIXME -- should probably handle the edge case where id is in top or bottom row in a completely seperate if block
+
+    #FIXME - this entire block is being annoyin
+    
+    LOGGER.warning(f'adj row: {adjacent_rows}')
+    if target <= 39:
+        start = adjacent_rows[1].index(target)
+    else:
+        start = adjacent_rows[1].index(target) - 1 
+
+    if target > 760:
+        end = adjacent_rows[1].index(target)
+    else:
+        end = adjacent_rows[1].index(target) + 2
+
+    
+
+    adjacent_ids = [x[start:end] for x in adjacent_rows]
+
+    #LOGGER.warning(f'Target ID: {target}')
+    LOGGER.warning(f'Adjacent ids: {adjacent_ids}')
+
+
+
 
 
 
