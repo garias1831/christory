@@ -1,3 +1,4 @@
+from config.definitions import ROOT_DIR
 from data import Game
 from logic import CivInitializer, TurnHandler
 from kivy.app import App
@@ -8,6 +9,7 @@ from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.uix.stacklayout import StackLayout
 from kivy.uix.widget import Widget
 from kivy.core.window import Window
+import os
 import numpy as np
 import pandas as pd
 
@@ -28,11 +30,11 @@ class TitleScreen(Screen):
     def get_base_data(self):
         '''Gets the base map and civ sheets and stores them as dataframes. Called when user presses the 'New Game' button on the UI.'''
 
-        path = r'E:\code\python\kivy\christory\data\map-base.xlsx' #TODO -- make this path more dynamic, so other people can use it
+        path = os.path.join(ROOT_DIR, 'data', 'map-base.xlsx')
         map_df = pd.read_excel(path)
         Game.game_map = map_df.copy() #idk if copy is neccesary but like sure
 
-        path = r'E:\code\python\kivy\christory\data\civs-base.xlsx'
+        path = os.path.join(ROOT_DIR, 'data', 'civs-base.xlsx')
         civs_df = pd.read_excel(path)
         Game.civs = civs_df.copy() 
 
@@ -56,6 +58,9 @@ class GameMap(StackLayout):
     config_province()
         Instantiates ProvinceGraphic objects. Sets their color based on terrain and the controlling civ.
     '''
+    
+    #TODO use self.children to access the individual provinces
+
 
     def add_provinces(self): #TODO -- it probably makes sense to do a setup typa method just to be a little more clear (if complex)... just a method w calls to add province and add civ
         '''Adds ProvinceGraphic widgets to the GameMap based on the number of entries in the game_map dataframe. Called by entering the MainGameScreen.'''

@@ -17,7 +17,7 @@ class TurnHandler:
         controlled_ids = controlled_land['id']
         #claimable_land = game_map[['controller'] == 'UNC']
 
-    def find_adjacent_ids(self, id):
+    def find_adjacent_ids(self, id): #TODO -- shove fn from test file into here
         id_map = np.arange(800)
         id_map.split(20) #FIXME -- these loops arent neccesarry! slices are nice!
 
@@ -54,5 +54,3 @@ class CivInitializer:
 
 
         return spawns
-
-
