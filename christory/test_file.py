@@ -2,11 +2,14 @@
 
 from data import Game
 import pandas as pd
+import pytest
 import random as r
 import numpy as np
 import logging
 
 LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.DEBUG)
+
 
 #Checking to see if we're actually setting the value of the df
 def test_get_base_map():
@@ -47,6 +50,45 @@ def test_gsp():
     LOGGER.critical(f'Sample spawn: {spawns}')
 
 
+def test_roll_colonization():
+    pass
+
+
+@pytest.mark.parametrize('target_id', [(50), (79), (39), (799)])
+def test_get_adjacent_ids(target_id):
+    ids = range(800)
+    step = 40
+    target = target_id
+
+    id_map = [ids[x:x+step] for x in range(0, 800, step)]
+
+    for i, row in enumerate(id_map):
+         if target in row:
+              rownum = i
+              
+    if target <= 39: #This ain't to hot in terms of DRY, but it works? #FIXME: there are better ways to do this
+        adjacent_rows = id_map[rownum:rownum+2]
+        start = adjacent_rows[0].index(target) - 1
+        end = adjacent_rows[0].index(target) + 2
+    elif target >= 760:
+        adjacent_rows = id_map[rownum-1:rownum+1]
+        start = adjacent_rows[1].index(target) - 1
+        end = adjacent_rows[1].index(target) + 2
+    else:
+        adjacent_rows = id_map[rownum-1:rownum+2]
+        start = adjacent_rows[1].index(target) - 1
+        end = adjacent_rows[1].index(target) + 2
+    
+    #LOGGER.warning(f'adj row: {adjacent_rows}')
+    
+    adjacent_ids = [x[start:end] for x in adjacent_rows]
+
+    LOGGER.debug(f'Target ID: {target}')
+    LOGGER.debug(f'Adjacent ids: {adjacent_ids}')
+
+
+
+
 
 
 
@@ -59,11 +101,9 @@ def test_generate_spawn_position():
             civ_total = 4
             spawns = np.sort(np.random.randint(0, 800, size=civ_total))
             unique_spawns = np.sort(np.array(np.array(list(set(spawns)))))
-
             LOGGER.warning(spawns)
             LOGGER.error(f'Filtered spawn list:{unique_spawns}')
             
             if np.array_equal(spawns, unique_spawns):
                 break
         '''
-            
