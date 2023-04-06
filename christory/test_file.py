@@ -1,14 +1,50 @@
-#Misc test file using pytest (and maybe loggin' --> learn me); ignore me for game purposes
-
+'''Misc test file using pytest (and maybe loggin' --> learn me); ignore me for game purposes'''
+from config.definitions import ROOT_DIR
 from data import Game
 import pandas as pd
 import pytest
 import random as r
 import numpy as np
 import logging
+import os
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
+
+@pytest.fixture
+def df_setup():
+    '''Test fixture to read the map-base and civs-base xlsx files'''
+    path = os.path.join(ROOT_DIR, 'data', 'map-base.xlsx')
+    map_df = pd.read_excel(path)
+
+    path = os.path.join(ROOT_DIR, 'data', 'civs-base.xlsx')
+    civs_df = pd.read_excel(path)
+
+    return map_df, civs_df
+
+@pytest.fixture
+def random_spawn_setup(df_setup):
+    '''Grabs random ids from non-ocean provinces to use as civ starting locations. Modifies the map dataframe based on the generated spawns.
+        Returns
+        -------
+        spawns: list<int>
+            list of civ starting locations'''
+    
+    df, civs = df_setup
+
+    land = df[df['terrain'] != 'ocean']
+    id_list =  land['id'].tolist()
+    #Generating 4 civs
+    spawns = r.sample(id_list, 4)
+
+    #Setting the province controller in the df based on the spawns
+    for i, spawn in enumerate(spawns): #There is probably a more elegant way to do this. Might want to look up some dataframe tips online
+        civ = civs.iloc[i]['civ']   #Also there might b incentive to export this into another meth-od
+        #df['controller'].loc[df['id'] == spawn] = civ
+        df.loc[df['id'] == spawn, 'controller'] = civ
+
+    return df, civs
+
 
 
 #Checking to see if we're actually setting the value of the df
@@ -34,24 +70,28 @@ def test_add_provinces():
             #self.config_province()
 
 
-#Test for generate_spawn_potision method
-def test_gsp():
-    #setup data
-    path = r'E:\code\python\kivy\christory\data\map-base.xlsx'
-    df = pd.read_excel(path)
 
-    land = df[df['terrain'] != 'ocean']
-    LOGGER.warning(land.to_string())
+@pytest.mark.parametrize('civ', [('FRA')]) 
+def test_roll_colonization(random_spawn_setup, civ):
+    map_df, civs_df = random_spawn_setup
 
-    id_list =  land['id'].tolist()
-    LOGGER.warning(f'List of ids: {[id_list]}')
+    controlled_land = map_df.loc[map_df.controller == civ]
+    LOGGER.info(controlled_land)
 
-    spawns = r.sample(id_list, 4)
-    LOGGER.critical(f'Sample spawn: {spawns}')
+    colonizable_ids = set()
+    for target in controlled_land['id']:
+        adjacent_ids = get_adjacent_ids(target)
+        colonizable_ids.update(adjacent_ids)
+        #TODO -- put an if here to grab only the adjacent uncolonized provinces
+        LOGGER.debug(f'{target} {adjacent_ids}')
 
 
-def test_roll_colonization():
-    pass
+    #adjacent_ids = {adjacent_ids.union(test_get_adjacent_ids()) for x in map_df['id']}
+    #LOGGER.debug(f'Adjacent ID set: {colonizable_ids}')
+
+
+
+    
 
 
 @pytest.mark.parametrize('target_id', [(50), (79), (39), (799)])
@@ -66,7 +106,7 @@ def test_get_adjacent_ids(target_id):
          if target in row:
               rownum = i
               
-    if target <= 39: #This ain't to hot in terms of DRY, but it works? #FIXME: there are better ways to do this
+    if target <= 39: #This ain't to hot in terms of DRY, but it works? #FIXME: there are better ways to do this, maybe more pandas-centric
         adjacent_rows = id_map[rownum:rownum+2]
         start = adjacent_rows[0].index(target) - 1
         end = adjacent_rows[0].index(target) + 2
@@ -83,27 +123,49 @@ def test_get_adjacent_ids(target_id):
     
     adjacent_ids = [x[start:end] for x in adjacent_rows]
 
+    #Flattening adjacent_ids into a 1-D set
+    adjacent_ids = {x for ids in adjacent_ids for x in ids}
+
     LOGGER.debug(f'Target ID: {target}')
     LOGGER.debug(f'Adjacent ids: {adjacent_ids}')
 
+    #return adjacent_ids
+
+def get_adjacent_ids(target_id):
+    ids = range(800)
+    step = 40
+    target = target_id
+
+    id_map = [ids[x:x+step] for x in range(0, 800, step)]
+
+    for i, row in enumerate(id_map):
+         if target in row:
+              rownum = i
+              
+    if target <= 39: #This ain't to hot in terms of DRY, but it works? #FIXME: there are better ways to do this, maybe more pandas-centric
+        adjacent_rows = id_map[rownum:rownum+2]
+        start = adjacent_rows[0].index(target) - 1
+        end = adjacent_rows[0].index(target) + 2
+    elif target >= 760:
+        adjacent_rows = id_map[rownum-1:rownum+1]
+        start = adjacent_rows[1].index(target) - 1
+        end = adjacent_rows[1].index(target) + 2
+    else:
+        adjacent_rows = id_map[rownum-1:rownum+2]
+        start = adjacent_rows[1].index(target) - 1
+        end = adjacent_rows[1].index(target) + 2
+    
+    #LOGGER.warning(f'adj row: {adjacent_rows}')
+    
+    adjacent_ids = [x[start:end] for x in adjacent_rows]
+
+    #Flattening adjacent_ids into a 1-D set
+    adjacent_ids = {x for ids in adjacent_ids for x in ids}
+
+    return adjacent_ids
+
+    
 
 
 
 
-
-
-
-'''
-def test_generate_spawn_position():
-        
-        
-        while True:
-            civ_total = 4
-            spawns = np.sort(np.random.randint(0, 800, size=civ_total))
-            unique_spawns = np.sort(np.array(np.array(list(set(spawns)))))
-            LOGGER.warning(spawns)
-            LOGGER.error(f'Filtered spawn list:{unique_spawns}')
-            
-            if np.array_equal(spawns, unique_spawns):
-                break
-        '''
