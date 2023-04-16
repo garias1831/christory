@@ -89,13 +89,32 @@ class GameMap(StackLayout):
         spawns = CivInitializer().generate_spawn_position()
         for i, spawn in enumerate(spawns):
             civ = Game.civs.iloc[i]['civ']
-            #Widgets in self.children are stored front-to-back even though we insert them back-to-front.
-            #See this: https://github.com/kivy/kivy/issues/2895
-            children = self.children[:]
-            children.reverse()
-            #The province's id and index in the list are equal
-            province = children[spawn]
+            province = self.get_province(spawn)
             province.set_civ_color(civ)
+
+    def get_province(self, _id):
+        '''Selects a province from the children list.
+        Parameters
+        ----------
+        _id: int
+            id of the province to select
+        Returns
+        -------
+        province: ProvinceGraphic
+            See ProvinceGraphic class for more info
+        '''
+        
+        #Widgets in self.children are stored front-to-back even though we insert them back-to-front.
+        #See this: https://github.com/kivy/kivy/issues/2895
+        children = self.children[:]
+        children.reverse()
+        #The province's id and index in the list are equal
+        province = children[_id]
+        
+        return province
+
+
+   
         
        
 class ProvinceGraphic(Widget):

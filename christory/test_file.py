@@ -92,13 +92,21 @@ def test_roll_colonization(random_spawn_setup, civ):
     for target in controlled_land['id']: #This is very inefficient. The call to get adjacent ids should not occur if all the adjacent ids
         adjacent_ids = get_adjacent_ids(target)
         all_ids.update(adjacent_ids)
-        #TODO -- put an if here to grab only the adjacent uncolonized provinces
+        
         LOGGER.debug(f'Target province: {target}; Adjacent ids: {adjacent_ids}')
 
     uncolonized_df = map_df.loc[map_df['controller'] == 'UNC']
-    #If the given id is uncolonized, add it to the list of colonizable ids.
-    colonizable_ids = uncolonized_df[uncolonized_df['id'].isin(all_ids)].id # pd.Series of all the province ids
-    LOGGER.info(f'Colonizable ids: {colonizable_ids}')
+    #Grab a random uncolonized province id
+    colonized = uncolonized_df[uncolonized_df['id'].isin(all_ids)].sample(n=1).iloc[0].id
+    LOGGER.info(f'ID of province to colonize:\n {colonized}')
+
+    #Update the map to reflect the new controller
+    map_df.loc[map_df['id'] == colonized, 'controller'] = civ
+    
+    #Getting controllled land again for testing purposes
+    controlled_land = map_df.loc[map_df.controller == civ]
+    LOGGER.debug(f'Civ land post-colonization: \n {controlled_land}') #TODO -- add the province development values to the map itself
+
 
     #LOGGER.info(f'uncolonized df\n: {uncolonized_df.to_string()}')
 

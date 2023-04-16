@@ -4,9 +4,17 @@ import numpy as np
 import random as r
 
 class TurnHandler:
+    '''Handles the choices made by civs. Civs can choose to colonize free land, develop existing land, develop technology, or declare war on another civ.
+    Each civ makes a randomized selection for its choice at the beginning of each turn (when the next turn button is pressed).
+
+    Methods
+    -------
+    TODO
+    '''
     
-    def on_next_turn(self):
+    def on_next_turn(self): #TODO -- game should not roll colonization if there are no eligible provinces to colonize. 
         chance = r.uniform(0, 1)
+        #self.roll_colonization
         
 
     def roll_colonization(self, civ): #TODO this function should probably have an event/callback to manipulate the UI, rather than a direcy call
