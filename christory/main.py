@@ -100,7 +100,6 @@ class GameMap(StackLayout):
        
 class ProvinceGraphic(Widget):
     '''Visual representaion of an individual province.
-
     Methods
     -------
     draw_province_rect(color)
@@ -161,7 +160,6 @@ class ProvinceGraphic(Widget):
         ----------
         terrain: str
             The terrain of the province being drawn.
-
         Returns
         ---------
         tuple<float>

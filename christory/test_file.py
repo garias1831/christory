@@ -77,13 +77,31 @@ def test_roll_colonization(random_spawn_setup, civ):
 
     controlled_land = map_df.loc[map_df.controller == civ]
     LOGGER.info(controlled_land)
+    ''' Set of ids outlining the civ's owned provinces.
+        If the civ looks like so: (empty space denoted by #, civ at position X)
+        # # # #
+        # # X #
+        # # # #
 
-    colonizable_ids = set()
-    for target in controlled_land['id']:
+        The set will contain these province ids: (O denotes outline)
+        # O O O
+        # O X O
+        # O O O
+    '''
+    all_ids = set()
+    for target in controlled_land['id']: #This is very inefficient. The call to get adjacent ids should not occur if all the adjacent ids
         adjacent_ids = get_adjacent_ids(target)
-        colonizable_ids.update(adjacent_ids)
+        all_ids.update(adjacent_ids)
         #TODO -- put an if here to grab only the adjacent uncolonized provinces
-        LOGGER.debug(f'{target} {adjacent_ids}')
+        LOGGER.debug(f'Target province: {target}; Adjacent ids: {adjacent_ids}')
+
+    uncolonized_df = map_df.loc[map_df['controller'] == 'UNC']
+    #If the given id is uncolonized, add it to the list of colonizable ids.
+    colonizable_ids = uncolonized_df[uncolonized_df['id'].isin(all_ids)].id # pd.Series of all the province ids
+    LOGGER.info(f'Colonizable ids: {colonizable_ids}')
+
+    #LOGGER.info(f'uncolonized df\n: {uncolonized_df.to_string()}')
+
 
 
     #adjacent_ids = {adjacent_ids.union(test_get_adjacent_ids()) for x in map_df['id']}
@@ -163,9 +181,3 @@ def get_adjacent_ids(target_id):
     adjacent_ids = {x for ids in adjacent_ids for x in ids}
 
     return adjacent_ids
-
-    
-
-
-
-
