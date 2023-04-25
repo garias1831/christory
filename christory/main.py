@@ -43,6 +43,10 @@ class MainGameScreen(Screen):
     '''Represents the window where the game will actually be played.'''
     
     def on_next_turn(self):
+        #TODO: This should most likely be segregated into 2 different methods
+        #TODO: Both should be in the 'model', but one should deal with JUST logic, and the other should deal with JUST UI
+        #TODO: Can accomplish this by storing things like modified province ids in fields on the TurnHandler class, returning it, and then passing it to
+        #TODO some event that passes those values to this file (the 'view') where they can be used to modify UI color, contents, etc.
         TurnHandler().on_next_turn()
 
 

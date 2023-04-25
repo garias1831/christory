@@ -85,3 +85,7 @@ class CivInitializer:
             df.loc[df['id'] == spawn, 'controller'] = civ
 
         return spawns
+
+
+class ViewRelay: #Could function as the 'controller' part of this scuffed-sorta MVC?
+    pass
